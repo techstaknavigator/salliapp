@@ -1,4 +1,5 @@
-name: Extract Node Modules
+
+name: Extract Babel into Node Modules
 
 on:
   workflow_dispatch:
@@ -14,16 +15,44 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install 7zip
-        run: sudo apt-get update && sudo apt-get install -y p7zip-full
+      - name: Install 7-Zip
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y p7zip-full
 
-      - name: Extract archive
-        run: 7z x node_modules.7z -o./node_modules
+      - name: Check archive
+        run: |
+          if [ ! -f "@babel.7z" ]; then
+            echo "ERROR: @babel.7z not found in repository root"
+            exit 1
+          fi
+
+          mkdir -p node_modules
+          7z l "@babel.7z"
+
+      - name: Extract Babel into node_modules
+        run: |
+          7z x "@babel.7z" -o"./node_modules" -y
+
+      - name: Verify extraction
+        run: |
+          echo "Checking extracted files..."
+          ls -la node_modules/
+          if [ -d "node_modules/@babel" ]; then
+            echo "SUCCESS: node_modules/@babel found"
+          else
+            echo "WARNING: node_modules/@babel not found at expected path"
+            echo "Check the archive's internal folder structure."
+            exit 1
+          fi
 
       - name: Commit extracted files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add -f node_modules/
-          git commit -m "Extract node_modules archive" || echo "No changes"
+
+          git commit -m "Extract Babel into node_modules" || echo "No changes to commit"
+
           git push

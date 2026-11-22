@@ -1,3 +1,4 @@
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
@@ -15,11 +16,15 @@ export default defineConfig({
       protocolImports: true
     })
   ],
-  base: './', // Ensures relative assets work on static hosting (Vercel, Netlify, Apache, Github Pages)
+
+  // GitHub Pages repository path
+  base: '/salliapp/',
+
   server: {
     port: 3000,
     open: true
   },
+
   build: {
     outDir: 'dist',
     sourcemap: false,

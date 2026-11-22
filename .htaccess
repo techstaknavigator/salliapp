@@ -1,0 +1,6 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # If request is root of SalaryApp, redirect to dist/index.html if dist exists
+  RewriteCond %{REQUEST_URI} ^/SalaryApp/?$
+  RewriteRule ^$ dist/ [L,R=302]
+</IfModule>
